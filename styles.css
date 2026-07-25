@@ -211,6 +211,8 @@ body::-webkit-scrollbar {
     height: 100%;
     object-fit: cover;
     display: block;
+    will-change: transform;          /* promote to compositor layer */
+    image-rendering: optimizeSpeed;  /* skip bilinear during fast scrub */
 }
 
 .canvas-overlay {
@@ -720,7 +722,7 @@ body::-webkit-scrollbar {
 .receipt-image-container {
     position: relative;
     width: 100%;
-    height: 140px;
+    aspect-ratio: 5 / 4;
     margin: 15px 0 25px 0;
     border: 1px solid var(--color-border);
     border-radius: 4px;
@@ -1611,7 +1613,7 @@ body.image-focused .receipt-image-container .receipt-img.active {
         display: block;
         position: relative;
         width: 100%;
-        height: 160px;
+        aspect-ratio: 5 / 4;
         margin: 15px 0 25px 0; /* adds margin below it to space from option cards */
         border: 1px solid var(--color-border);
         border-radius: 4px;

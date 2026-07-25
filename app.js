@@ -20,6 +20,10 @@ function initApp() {
     // Force scroll-to-top on reload
     if (history.scrollRestoration) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
+    window.addEventListener('load', () => {
+        window.scrollTo(0, 0);
+        if (lenisInstance) lenisInstance.scrollTo(0, { immediate: true });
+    });
 
     const preloader    = document.getElementById('preloader');
     const loaderBar    = document.getElementById('loader-bar');
@@ -46,6 +50,9 @@ function initApp() {
 
         if (loaderBar)     loaderBar.style.width     = '100%';
         if (loaderPercent) loaderPercent.textContent = '100%';
+
+        // Ensure browser resets scroll position before fading out preloader
+        window.scrollTo(0, 0);
 
         setTimeout(() => {
             if (preloader) preloader.classList.add('fade-out');
@@ -75,7 +82,7 @@ function initApp() {
     // high priority because it is the first visible frame in reverse-order play.
     // -------------------------------------------------------------------------
     function loadFrame(i) {
-        const img    = new Image();
+        const img = new Image();
         img.decoding = 'async';
         img.onload = () => {
             if (typeof img.decode === 'function') {
@@ -642,6 +649,7 @@ function initApp() {
             });
 
             lenisInstance = lenis;
+            lenis.scrollTo(0, { immediate: true });
             lenis.on('scroll', ScrollTrigger.update);
             gsap.registerPlugin(ScrollTrigger);
 
@@ -733,7 +741,7 @@ function initApp() {
                     pinSpacing: true,
                 });
 
-                // Hero text fades out as you start scrolling
+                // Hero text fades out as you scroll down, and snaps back if you scroll to top
                 gsap.to(['#chapter-orbit [data-gsap-fade]', '#chapter-orbit .scroll-cue'], {
                     opacity: 0,
                     y: (index, target) => target.classList.contains('scroll-cue') ? 30 : -50,
@@ -742,6 +750,12 @@ function initApp() {
                         start: 'top top',
                         end: 'bottom 80%',
                         scrub: true,
+                        onLeaveBack: () => {
+                            // Restore hero text when scrolled fully back to top
+                            gsap.to(['#chapter-orbit [data-gsap-fade]', '#chapter-orbit .scroll-cue'], {
+                                opacity: 1, y: 0, duration: 0.4, ease: 'power2.out'
+                            });
+                        },
                     },
                 });
 
@@ -847,7 +861,7 @@ function initApp() {
                     },
                 });
 
-                // Header auto-hide on scroll down, show on scroll up (stays visible in Hero section)
+                // Header auto-hide on scroll down, show on scroll up (stays visible in Hero section and from specs section downwards)
                 ScrollTrigger.create({
                     trigger: 'body',
                     start: 'top top',
@@ -855,12 +869,24 @@ function initApp() {
                     onUpdate: (self) => {
                         const scrollY = window.scrollY;
                         const heroHeight = window.innerHeight;
-                        if (self.direction === 1 && scrollY > heroHeight) {
-                            // Scrolling down past Hero -> hide header
-                            gsap.to('.main-header', { yPercent: -120, duration: 0.3, ease: 'power2.out' });
-                        } else if (self.direction === -1 || scrollY <= heroHeight) {
-                            // Scrolling up OR inside the Hero section -> show header
+                        const specsEl = document.getElementById('section-specs');
+                        
+                        // Calculate specs top dynamically (considering pins)
+                        let specsTop = specsEl ? specsEl.getBoundingClientRect().top + scrollY : 99999;
+                        
+                        if (scrollY <= heroHeight) {
+                            // In Hero (Section 1) -> always show header
                             gsap.to('.main-header', { yPercent: 0, duration: 0.3, ease: 'power2.out' });
+                        } else if (scrollY >= (specsTop - 50)) {
+                            // In Section 6 and downwards -> always show header
+                            gsap.to('.main-header', { yPercent: 0, duration: 0.3, ease: 'power2.out' });
+                        } else {
+                            // In Section 2, 3, 4, 5 -> hide on scroll down, show on scroll up
+                            if (self.direction === 1) {
+                                gsap.to('.main-header', { yPercent: -120, duration: 0.3, ease: 'power2.out' });
+                            } else if (self.direction === -1) {
+                                gsap.to('.main-header', { yPercent: 0, duration: 0.3, ease: 'power2.out' });
+                            }
                         }
                     }
                 });
