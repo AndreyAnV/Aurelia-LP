@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURELIA R-1 — Control, Redefined</title>
+    <meta name="description" content="Preorder the Aurelia R-1 luxury tennis racket. Gold-infused carbon fiber, precision-balanced, and engineered for players who demand absolute control.">
+    <!-- Google Fonts: Cormorant Garamond (Serif) & Outfit (Sans) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader" class="preloader">
+        <div class="loader-content">
+            <div class="loader-title">AURELIA</div>
+            <div class="loader-bar-container">
+                <div id="loader-bar" class="loader-bar"></div>
+            </div>
+            <div id="loader-percent" class="loader-percent">0%</div>
+            <div class="loader-info font-grotesque">Preloading frames...</div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="main-header">
+        <div class="header-logo">AURELIA</div>
+        <nav class="header-nav">
+            <a href="#chapter-orbit" class="nav-link">The R-1</a>
+            <a href="#section-specs" class="nav-link">Specifications</a>
+            <a href="#section-preorder" class="nav-link">Preorder</a>
+        </nav>
+    </header>
+
+    <!-- Global Fixed Canvas Background -->
+    <div id="global-canvas-container" class="canvas-container" style="opacity: 0;">
+        <canvas id="canvas-main"></canvas>
+        <div class="canvas-overlay"></div>
+    </div>
+
+    <!-- Scroll Container -->
+    <main class="scroll-container">
+        
+
+        <!-- CHAPTER 1: HERO ORBIT -->
+        <section id="chapter-orbit" class="pinned-section">
+            <div class="slide-content center-align">
+                <p class="hero-overline font-grotesque" data-gsap-fade>THE R-1. PRECISION, REFINED.</p>
+                <h1 class="hero-title font-serif" data-gsap-fade>AURELIA</h1>
+                <p class="hero-subtitle font-grotesque" data-gsap-fade>Control, redefined.</p>
+            </div>
+            <div class="scroll-cue font-grotesque">
+                <span>SCROLL TO DISCOVER</span>
+                <div class="scroll-cue-line"></div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 2: MANIFESTO -->
+        <section id="chapter-manifesto" class="pinned-section">
+            <div class="slide-content left-align">
+                <div class="manifesto-lines">
+                    <h2 class="manifesto-line font-serif" data-reveal-line>A singular vision of speed and touch.</h2>
+                    <h2 class="manifesto-line font-serif" data-reveal-line>Forged from aerospace-grade carbon fiber.</h2>
+                    <h2 class="manifesto-line font-serif" data-reveal-line>Woven with 24k gold elements for dampening.</h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 3: THE EXPLOSION -->
+        <section id="chapter-explode" class="pinned-section">
+            <!-- Tech callouts overlaying the canvas during explosion scrub -->
+            <div class="tech-callouts-layer">
+                <div id="callout-1" class="tech-callout" style="top: 30%; left: 15%;">
+                    <div class="callout-line"></div>
+                    <div class="callout-content">
+                        <span class="callout-title font-grotesque">FRAME CORES</span>
+                        <span class="callout-desc font-grotesque">21mm variable dual-taper</span>
+                    </div>
+                </div>
+                <div id="callout-2" class="tech-callout" style="top: 15%; right: 15%;">
+                    <div class="callout-line right-aligned"></div>
+                    <div class="callout-content right-aligned">
+                        <span class="callout-title font-grotesque">WEIGHT / BALANCE</span>
+                        <span class="callout-desc font-grotesque">305g unstrung · 315mm headlight</span>
+                    </div>
+                </div>
+                <div id="callout-3" class="tech-callout" style="bottom: 30%; left: 20%;">
+                    <div class="callout-line"></div>
+                    <div class="callout-content">
+                        <span class="callout-title font-grotesque">INFUSED MATRIX</span>
+                        <span class="callout-desc font-grotesque">24k Gold-infused Carbon Matrix</span>
+                    </div>
+                </div>
+                <div id="callout-4" class="tech-callout" style="bottom: 18%; right: 20%;">
+                    <div class="callout-line right-aligned"></div>
+                    <div class="callout-content right-aligned">
+                        <span class="callout-title font-grotesque">SWEET SPOT</span>
+                        <span class="callout-desc font-grotesque">Expanded throat geometry</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-content center-align">
+                <h2 class="chapter-label font-grotesque" data-gsap-fade>THE COMPONENT ANATOMY</h2>
+            </div>
+        </section>
+
+        <!-- CHAPTER 4: REASSEMBLY -->
+        <section id="chapter-reassembly" class="pinned-section">
+            <div class="slide-content center-align">
+                <h2 class="step-text font-serif" data-gsap-fade>Every strike, remembered.</h2>
+            </div>
+        </section>
+
+        <!-- CHAPTER 5: THE MACRO DETAILS -->
+        <section id="chapter-macro" class="pinned-section">
+            <div class="slide-content right-align">
+                <div class="macro-text-block">
+                    <h2 class="macro-title font-serif" data-gsap-fade>Bespoke Details</h2>
+                    <p class="macro-desc font-grotesque" data-gsap-fade>Wrapped in hand-stitched Milanese calfskin leather. Each frame carries a signed metal badge indicating its production sequence number.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 6: SPECIFICATIONS (Standard scrolling grid layout) -->
+        <section id="section-specs" class="specs-section">
+            <div class="container">
+                <div class="section-header">
+                    <p class="section-overline font-grotesque">THE BENCHMARKS</p>
+                    <h2 class="section-title font-serif">TECHNICAL DATA</h2>
+                </div>
+                
+                <div class="specs-grid">
+                    <div class="spec-row font-grotesque">
+                        <div class="spec-label">Head Size</div>
+                        <div class="spec-value">98 sq. in. / 632 sq. cm.</div>
+                    </div>
+                    <div class="spec-row font-grotesque">
+                        <div class="spec-label">Weight (Unstrung)</div>
+                        <div class="spec-value">305 g / 10.8 oz.</div>
+                    </div>
+                    <div class="spec-row font-grotesque">
+                        <div class="spec-label">Balance</div>
+                        <div class="spec-value">315 mm / 9 pts HL</div>
+                    </div>
+                    <div class="spec-row font-grotesque">
+                        <div class="spec-label">String Pattern</div>
+                        <div class="spec-value">16 Mains / 19 Crosses</div>
+                    </div>
+                    <div class="spec-row font-grotesque">
+                        <div class="spec-label">Beam Width</div>
+                        <div class="spec-value">21 mm / 21 mm / 21 mm</div>
+                    </div>
+                    <div class="spec-row font-grotesque">
+                        <div class="spec-label">Composition</div>
+                        <div class="spec-value">24k Gold Filament & High-Modulus Carbon Matrix</div>
+                    </div>
+                    <div class="spec-row font-grotesque">
+                        <div class="spec-label">Grip Size</div>
+                        <div class="spec-value">1, 2, 3, 4, 5 (Premium Leather Wrapped)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 7: PREORDER / CTA -->
+        <section id="section-preorder" class="preorder-section">
+            <div class="container">
+                <!-- Set Details Presentation -->
+                <div class="showcase-grid">
+                    <div class="showcase-image-wrapper">
+                        <img src="images/racket_set.jpg" alt="Aurelia R-1 Tennis Racket Luxury Set" class="showcase-img">
+                    </div>
+                    <div class="showcase-details">
+                        <p class="section-overline font-grotesque">COMPLETE COLLECTION</p>
+                        <h2 class="showcase-title font-serif">THE AURELIA SET</h2>
+                        <p class="showcase-description font-grotesque">
+                            Elevate your presence on and off the court. The Aurelia Set contains the signature R-1 racket, a hand-crafted black full-grain leather tennis duffle bag, and three bespoke gold-stamped tennis tournament balls.
+                        </p>
+                        <ul class="showcase-bullets font-grotesque">
+                            <li>Bespoke customized stringing to your exact tension specs</li>
+                            <li>Full-grain leather duffle bag with moisture-controlled compartments</li>
+                            <li>Numbered certification plaque signed by the master craftsman</li>
+                        </ul>
+                        <div class="price-container">
+                            <span class="price font-serif">$1,250</span>
+                            <span class="price-note font-grotesque">Complete Set</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preorder-grid">
+                    <div class="preorder-info">
+                        <p class="section-overline font-grotesque">RESERVE YOUR ALLOCATION</p>
+                        <h2 class="preorder-title font-serif">BEGIN THE JOURNEY</h2>
+                        <p class="preorder-text font-grotesque">
+                            Aurelia R-1 rackets are manufactured in limited numbers. Securing your allocation reserves a build slot in our next workshop batch.
+                        </p>
+                        <div class="allocation-status font-grotesque">
+                            <div class="status-indicator animate-pulse"></div>
+                            <span>Next Batch Dispatch: October 2026</span>
+                        </div>
+                    </div>
+                    
+                    <div class="preorder-form-container">
+                        <form id="preorder-form" class="preorder-form">
+                            <div class="form-group">
+                                <label for="name" class="font-grotesque">Full Name</label>
+                                <input type="text" id="name" name="name" required placeholder="Andrey Romanov">
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="font-grotesque">Email Address</label>
+                                <input type="email" id="email" name="email" required placeholder="andrey@domain.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="selection" class="font-grotesque">Choose Allocation</label>
+                                <select id="selection" name="selection" required>
+                                    <option value="" disabled selected>Select an option</option>
+                                    <option value="single">Aurelia R-1 Racket Only ($650)</option>
+                                    <option value="set">The Aurelia Complete Set ($1,250)</option>
+                                    <option value="duo">The Aurelia Duo Set ($1,850 - 2x Racket & Set)</option>
+                                </select>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="newsletter" name="newsletter" checked>
+                                <label for="newsletter" class="font-grotesque">Include custom tension consulting call</label>
+                            </div>
+                            <button type="submit" id="submit-btn" class="btn btn-primary font-grotesque">
+                                <span>REQUEST ALLOCATION</span>
+                                <div class="btn-shine"></div>
+                            </button>
+                            <div id="form-message" class="form-message font-grotesque"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="footer font-grotesque">
+                <p>&copy; 2026 Aurelia Athletics. Handcrafted in Milan. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Allocation</a>
+                </div>
+            </footer>
+        </section>
+    </main>
+
+    <!-- JS Scripts -->
+    <!-- GSAP for scroll animation performance -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <!-- Lenis for high-performance smooth scroll -->
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+    <!-- Main Application Code -->
+    <script src="app.js"></script>
+</body>
+</html>
