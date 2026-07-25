@@ -126,12 +126,98 @@ function initApp() {
     }
 
     // -------------------------------------------------------------------------
-    // PREORDER FORM
+    // PREORDER CONFIGURATOR & RECEIPT TERMINAL
     // -------------------------------------------------------------------------
     const preorderForm = document.getElementById('preorder-form');
     const formMessage  = document.getElementById('form-message');
     const submitBtn    = document.getElementById('submit-btn');
+    
+    const optionCards = document.querySelectorAll('.option-card');
+    const selectionInput = document.getElementById('selection');
+    const receiptSelection = document.getElementById('receipt-selection');
+    const receiptPrice = document.getElementById('receipt-price');
 
+    const gripBtns = document.querySelectorAll('.grip-btn');
+    const gripInput = document.getElementById('grip_size');
+    const receiptGrip = document.getElementById('receipt-grip');
+
+    const tensionSlider = document.getElementById('tension');
+    const tensionNum = document.getElementById('tension-num');
+    const tensionDesc = document.getElementById('tension-desc');
+    const receiptTension = document.getElementById('receipt-tension');
+    const receiptSerial = document.getElementById('receipt-serial');
+
+    const tensionRecommendations = {
+        50: 'Maximum Power & Comfort (Soft Feel)',
+        51: 'Maximum Power & Comfort (Soft Feel)',
+        52: 'Increased Power & Arm Comfort',
+        53: 'Increased Power & Arm Comfort',
+        54: 'Excellent Blend of Power & Control',
+        55: 'Optimal Control & Power Balance',
+        56: 'Optimal Control & Power Balance',
+        57: 'Enhanced Precision & Placement',
+        58: 'Enhanced Precision & Placement',
+        59: 'Advanced Placement & High Spin Control',
+        60: 'Maximum Precision & Tension Stability',
+        61: 'Maximum Precision & Tension Stability',
+        62: 'Professional Control Focus (Stiff Feel)',
+        63: 'Professional Control Focus (Stiff Feel)',
+        64: 'Ultra Stiff Professional Diagnostic',
+        65: 'Ultra Stiff Professional Diagnostic'
+    };
+
+    function generateSerial() {
+        if (receiptSerial) {
+            const randomHex = Math.floor(Math.random() * 65535).toString(16).toUpperCase().padStart(4, '0');
+            const randomBatch = Math.floor(Math.random() * 9) + 1;
+            receiptSerial.textContent = `AUR-R1-B${randomBatch}-${randomHex}`;
+        }
+    }
+    
+    // Initialize receipt serial number
+    generateSerial();
+
+    // Option cards event listeners
+    optionCards.forEach(card => {
+        card.addEventListener('click', () => {
+            optionCards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            
+            const val = card.getAttribute('data-value');
+            const price = card.getAttribute('data-price');
+            const name = card.querySelector('.option-name').textContent;
+            
+            if (selectionInput) selectionInput.value = val;
+            if (receiptSelection) receiptSelection.textContent = name;
+            if (receiptPrice) receiptPrice.textContent = `$${parseInt(price).toLocaleString()}`;
+        });
+    });
+
+    // Grip size event listeners
+    gripBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            gripBtns.forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            const val = btn.getAttribute('data-value');
+            if (gripInput) gripInput.value = val;
+            if (receiptGrip) receiptGrip.textContent = val;
+        });
+    });
+
+    // Tension range event listener
+    if (tensionSlider) {
+        tensionSlider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (tensionNum) tensionNum.textContent = val;
+            if (receiptTension) receiptTension.textContent = val;
+            if (tensionDesc) {
+                tensionDesc.textContent = tensionRecommendations[val] || 'Custom Calibration';
+            }
+        });
+    }
+
+    // Submit handler
     if (preorderForm) {
         preorderForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -150,10 +236,76 @@ function initApp() {
                 formMessage.className   = 'form-message success';
                 formMessage.innerHTML   =
                     `Allocation secured for <strong>${name}</strong>. A verification email has been dispatched to <strong>${email}</strong>.`;
+                
+                // Reset form elements
                 preorderForm.reset();
+                
+                // Reset interactive configurator elements to defaults
+                optionCards.forEach(c => c.classList.remove('selected'));
+                const defaultCard = document.querySelector('.option-card[data-value="set"]');
+                if (defaultCard) {
+                    defaultCard.classList.add('selected');
+                    if (selectionInput) selectionInput.value = 'set';
+                    if (receiptSelection) receiptSelection.textContent = defaultCard.querySelector('.option-name').textContent;
+                    if (receiptPrice) receiptPrice.textContent = `$1,250`;
+                }
+                
+                gripBtns.forEach(b => b.classList.remove('selected'));
+                const defaultGrip = document.querySelector('.grip-btn[data-value="3"]');
+                if (defaultGrip) {
+                    defaultGrip.classList.add('selected');
+                    if (gripInput) gripInput.value = '3';
+                    if (receiptGrip) receiptGrip.textContent = '3';
+                }
+                
+                if (tensionSlider) {
+                    tensionSlider.value = 55;
+                    if (tensionNum) tensionNum.textContent = '55';
+                    if (receiptTension) receiptTension.textContent = '55';
+                    if (tensionDesc) tensionDesc.textContent = 'Optimal Control & Power Balance';
+                }
+                
+                // Regenerate serial number
+                generateSerial();
             }, 1500);
         });
     }
+
+    // -------------------------------------------------------------------------
+    // INTERACTIVE SPECS HUD
+    // -------------------------------------------------------------------------
+    const hudCards = document.querySelectorAll('.hud-card');
+    const hudNodes = document.querySelectorAll('.hud-node');
+
+    hudCards.forEach(card => {
+        const part = card.getAttribute('data-node');
+        card.addEventListener('mouseenter', () => {
+            document.querySelectorAll(`.blueprint-${part}`).forEach(el => el.classList.add('active'));
+            const node = document.getElementById(`node-${part}`);
+            if (node) node.classList.add('active');
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            document.querySelectorAll(`.blueprint-${part}`).forEach(el => el.classList.remove('active'));
+            const node = document.getElementById(`node-${part}`);
+            if (node) node.classList.remove('active');
+        });
+    });
+
+    hudNodes.forEach(node => {
+        const ref = node.getAttribute('data-ref');
+        node.addEventListener('mouseenter', () => {
+            node.classList.add('active');
+            document.querySelectorAll(`.blueprint-${ref}`).forEach(el => el.classList.add('active'));
+            document.querySelectorAll(`.hud-card[data-node="${ref}"]`).forEach(el => el.classList.add('active'));
+        });
+        
+        node.addEventListener('mouseleave', () => {
+            node.classList.remove('active');
+            document.querySelectorAll(`.blueprint-${ref}`).forEach(el => el.classList.remove('active'));
+            document.querySelectorAll(`.hud-card[data-node="${ref}"]`).forEach(el => el.classList.remove('active'));
+        });
+    });
 
     // -------------------------------------------------------------------------
     // CANVAS SCRUB ENGINE
