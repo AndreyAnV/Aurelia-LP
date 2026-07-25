@@ -30,7 +30,9 @@
 
     <!-- Navigation Header -->
     <header class="main-header">
-        <div class="header-logo">AURELIA</div>
+        <div class="header-logo">
+            <img src="images/AR-logo.png" alt="Aurelia Logo">
+        </div>
         <nav class="header-nav">
             <a href="#chapter-orbit" class="nav-link">The R-1</a>
             <a href="#section-specs" class="nav-link">Specifications</a>
@@ -54,6 +56,9 @@
                 <p class="hero-overline font-grotesque" data-gsap-fade>THE R-1. PRECISION, REFINED.</p>
                 <h1 class="hero-title font-serif" data-gsap-fade>AURELIA</h1>
                 <p class="hero-subtitle font-grotesque" data-gsap-fade>Control, redefined.</p>
+                <div class="hero-logo-container" data-gsap-fade>
+                    <img src="images/AR-logo.png" alt="Aurelia Logo" class="hero-logo-img">
+                </div>
             </div>
             <div class="scroll-cue font-grotesque">
                 <span>SCROLL TO DISCOVER</span>
@@ -220,20 +225,24 @@
 
                             <!-- Interactive Target Nodes -->
                             <g class="hud-node" id="node-head" data-ref="head">
+                                <circle cx="100" cy="130" r="18" fill="transparent" style="cursor: pointer;" />
                                 <circle cx="100" cy="130" r="6" fill="var(--color-accent)" opacity="0.2" class="node-pulse" />
-                                <circle cx="100" cy="130" r="3" fill="var(--color-accent)" />
+                                <circle cx="100" cy="130" r="3" fill="var(--color-accent)" class="node-core" />
                             </g>
                             <g class="hud-node" id="node-throat" data-ref="throat">
+                                <circle cx="100" cy="245" r="18" fill="transparent" style="cursor: pointer;" />
                                 <circle cx="100" cy="245" r="6" fill="var(--color-accent)" opacity="0.2" class="node-pulse" />
-                                <circle cx="100" cy="245" r="3" fill="var(--color-accent)" />
+                                <circle cx="100" cy="245" r="3" fill="var(--color-accent)" class="node-core" />
                             </g>
                             <g class="hud-node" id="node-shaft" data-ref="shaft">
+                                <circle cx="100" cy="355" r="18" fill="transparent" style="cursor: pointer;" />
                                 <circle cx="100" cy="355" r="6" fill="var(--color-accent)" opacity="0.2" class="node-pulse" />
-                                <circle cx="100" cy="355" r="3" fill="var(--color-accent)" />
+                                <circle cx="100" cy="355" r="3" fill="var(--color-accent)" class="node-core" />
                             </g>
                             <g class="hud-node" id="node-grip" data-ref="grip">
+                                <circle cx="100" cy="455" r="18" fill="transparent" style="cursor: pointer;" />
                                 <circle cx="100" cy="455" r="6" fill="var(--color-accent)" opacity="0.2" class="node-pulse" />
-                                <circle cx="100" cy="455" r="3" fill="var(--color-accent)" />
+                                <circle cx="100" cy="455" r="3" fill="var(--color-accent)" class="node-core" />
                             </g>
                         </svg>
                     </div>
@@ -263,30 +272,6 @@
         <!-- CHAPTER 7: PREORDER / CTA -->
         <section id="section-preorder" class="preorder-section">
             <div class="container">
-                <!-- Set Details Presentation -->
-                <div class="showcase-grid">
-                    <div class="showcase-image-wrapper glass-panel">
-                        <img src="images/racket_set.jpg" alt="Aurelia R-1 Tennis Racket Luxury Set" class="showcase-img">
-                        <div class="showcase-tech-tag font-grotesque">SYS_REF: AURELIA_SET_V1.0</div>
-                    </div>
-                    <div class="showcase-details">
-                        <p class="section-overline font-grotesque">COMPLETE COLLECTION</p>
-                        <h2 class="showcase-title font-serif">THE AURELIA SET</h2>
-                        <p class="showcase-description font-grotesque">
-                            Elevate your presence on and off the court. The Aurelia Set contains the signature R-1 racket, a hand-crafted black full-grain leather tennis duffle bag, and three bespoke gold-stamped tennis tournament balls.
-                        </p>
-                        <ul class="showcase-bullets font-grotesque">
-                            <li>Bespoke customized stringing to your exact tension specs</li>
-                            <li>Full-grain leather duffle bag with moisture-controlled compartments</li>
-                            <li>Numbered certification plaque signed by the master craftsman</li>
-                        </ul>
-                        <div class="price-container">
-                            <span class="price font-serif">$1,250</span>
-                            <span class="price-note font-grotesque">Complete Set</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Configurator Panel -->
                 <div class="configurator-panel">
                     <div class="configurator-header">
@@ -309,6 +294,15 @@
                             <div class="config-step">
                                 <span class="step-num font-grotesque">01</span>
                                 <label class="font-grotesque label-title">Choose Allocation Option</label>
+                                
+                                <!-- Mobile Inline Image Preview - now placed ABOVE options! -->
+                                <div class="mobile-image-preview">
+                                    <img src="images/hero_racket.jpg" alt="Aurelia R-1 Single Racket" class="mobile-preview-img" data-option="single">
+                                    <img src="images/racket_set.jpg" alt="The Aurelia Complete Set" class="mobile-preview-img active" data-option="set">
+                                    <img src="images/racket_set.jpg" alt="The Aurelia Duo Set" class="mobile-preview-img" data-option="duo">
+                                    <div class="image-close-btn-inner font-grotesque">&times;</div>
+                                </div>
+
                                 <div class="option-grid">
                                     <div class="option-card selected" data-value="set" data-price="1250">
                                         <div class="option-card-header">
@@ -356,7 +350,7 @@
                                     <label for="tension" class="font-grotesque label-title">String Tension Configuration</label>
                                     <div class="tension-slider-wrapper">
                                         <div class="slider-row">
-                                            <span class="tension-val font-grotesque"><span id="tension-num">55</span> lbs</span>
+                                            <span class="tension-val font-grotesque"><span id="tension-num">55</span> lbs / <span id="tension-num-kg">24.9</span> kg</span>
                                             <span class="tension-recommendation font-grotesque" id="tension-desc">Optimal Control & Power Balance</span>
                                         </div>
                                         <input type="range" id="tension" name="tension" class="hud-range-slider" min="50" max="65" value="55">
@@ -399,6 +393,15 @@
                                 <span class="receipt-title">ALLOCATION TELEMETRY</span>
                                 <span class="serial-tag" id="receipt-serial">AUR-R1-PENDING</span>
                             </div>
+                            
+                            <!-- Dynamic images corresponding to allocation options -->
+                            <div class="receipt-image-container">
+                                <img src="images/hero_racket.jpg" alt="Aurelia R-1 Single Racket" class="receipt-img" data-option="single">
+                                <img src="images/racket_set.jpg" alt="The Aurelia Complete Set" class="receipt-img active" data-option="set">
+                                <img src="images/racket_set.jpg" alt="The Aurelia Duo Set" class="receipt-img" data-option="duo">
+                                <div class="image-close-btn-inner font-grotesque">&times;</div>
+                            </div>
+
                             <div class="receipt-body">
                                 <div class="receipt-row">
                                     <span>Core Frame</span>
@@ -414,7 +417,7 @@
                                 </div>
                                 <div class="receipt-row">
                                     <span>String Tension</span>
-                                    <span><span id="receipt-tension">55</span> lbs</span>
+                                    <span><span id="receipt-tension">55</span> lbs / <span id="receipt-tension-kg">24.9</span> kg</span>
                                 </div>
                                 <div class="receipt-row">
                                     <span>Batch / Priority</span>
@@ -438,12 +441,87 @@
             <footer class="footer font-grotesque">
                 <p>&copy; 2026 Aurelia Athletics. Handcrafted in Milan. All rights reserved.</p>
                 <div class="footer-links">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Allocation</a>
+                    <a href="#" class="legal-link" data-tab="privacy">Privacy Policy</a>
+                    <a href="#" class="legal-link" data-tab="terms">Terms of Allocation</a>
                 </div>
             </footer>
         </section>
     </main>
+    <!-- Fullscreen Blur Backdrop for image zoom/hover -->
+    <div class="image-focus-backdrop"></div>
+    <div class="backdrop-close-btn font-grotesque">&times;</div>
+
+    <!-- Dedicated Fullscreen Zoom Modal (escapes scroll container stacking contexts) -->
+    <div class="zoom-modal" id="zoom-modal">
+        <div class="zoom-modal-viewport-close font-grotesque">&times;</div>
+        <div class="zoom-modal-content">
+            <img src="" alt="Zoomed View" id="zoom-modal-img">
+            <div class="zoom-modal-close font-grotesque">&times;</div>
+        </div>
+    </div>
+
+    <!-- Dedicated Demo Popup Modal -->
+    <div class="demo-popup-modal" id="demo-popup-modal">
+        <div class="demo-popup-content">
+            <span class="demo-popup-overline font-grotesque">SYSTEM NOTIFICATION</span>
+            <h3 class="demo-popup-title font-serif">DEMO ALLOCATION COMPLETED</h3>
+            <p class="demo-popup-text font-grotesque">
+                This website is a demonstration concept. No actual orders are processed and no financial transactions will occur. Your configuration has been logged in the system memory.
+            </p>
+            <button class="demo-popup-close-btn font-grotesque" id="demo-popup-close-btn">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <!-- Dedicated Legal & Protocol Compliance Modal -->
+    <div class="legal-modal" id="legal-modal">
+        <div class="legal-modal-viewport-close font-grotesque">&times;</div>
+        <div class="legal-modal-content">
+            <div class="legal-tabs font-grotesque">
+                <button type="button" class="legal-tab-btn active" data-target="privacy">PRIVACY POLICY</button>
+                <button type="button" class="legal-tab-btn" data-target="terms">TERMS OF ALLOCATION</button>
+            </div>
+            
+            <div class="legal-body font-grotesque active" id="legal-privacy" data-lenis-prevent>
+                <h4 class="legal-section-title font-serif">Neural & Telemetry Data Protection</h4>
+                <p class="legal-text">
+                    This protocol governs the handling of swing parameters and biomechanical telemetry gathered by the gold-infused Tectonic processor inside the Aurelia R-1 frame.
+                </p>
+                <h5 class="legal-sub-title">1. Telemetry Capture</h5>
+                <p class="legal-text">
+                    Upon grip engagement, the R-1 frame collects impact vectors, vibration nodes, and coordinate maps of string contact. This data is stored locally in the frame's carbon-silicon cores.
+                </p>
+                <h5 class="legal-sub-title">2. Encryption Protocol</h5>
+                <p class="legal-text">
+                    All neural feedback loop telemetry is encrypted using quantum-key handshakes, preventing interception by opposing coaches or tennis federations.
+                </p>
+                <h5 class="legal-sub-title">3. Cloud Sync</h5>
+                <p class="legal-text">
+                    Biometric statistics are transmitted solely via direct sub-orbital satellite relays during game breaks. Data is never shared with third-party advertising grids.
+                </p>
+            </div>
+            
+            <div class="legal-body font-grotesque" id="legal-terms" data-lenis-prevent>
+                <h4 class="legal-section-title font-serif">Tectonic Calibration Agreement</h4>
+                <p class="legal-text">
+                    By submitting your allocation request, you agree to comply with the guidelines defined by the Aurelia Athletics calibration division.
+                </p>
+                <h5 class="legal-sub-title">1. Demonstration Disclaimer</h5>
+                <p class="legal-text">
+                    This website is an interactive demonstration concept. No actual tennis rackets are manufactured, reserved, or shipped. Any estimated values are purely simulation-based.
+                </p>
+                <h5 class="legal-sub-title">2. String Tension Warning</h5>
+                <p class="legal-text">
+                    String calibrations exceeding 60 lbs must only be handled by certified Aurelia technicians. Aurelia is not responsible for local seismic events caused by high-tension swing speeds.
+                </p>
+                <h5 class="legal-sub-title">3. Duffle Bag Allocations</h5>
+                <p class="legal-text">
+                    The calfskin leather duffle bag is hand-finished in Milan. Demo allocations carry no delivery commitments. Enjoy the design roleplay.
+                </p>
+            </div>
+            
+            <button class="legal-modal-close-btn font-grotesque" id="legal-modal-close-btn">ACKNOWLEDGE PROTOCOL</button>
+        </div>
+    </div>
 
     <!-- JS Scripts -->
     <!-- GSAP for scroll animation performance -->

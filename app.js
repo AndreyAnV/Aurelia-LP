@@ -1,11 +1,11 @@
-// app.js — Frame scrub using yeyeyeyeyeyeyehhhh_frames (no video)
+// app.js — Frame scrub using vid-frames-webp (WebP, ~70 MB vs 3.5 GB PNG)
 
 function initApp() {
     // -------------------------------------------------------------------------
     // CONFIG
     // -------------------------------------------------------------------------
     const TOTAL_FRAMES = 747;
-    const FRAME_PREFIX = 'images/yeyeyeyeyeyeyehhhh_frames/frame_';
+    const FRAME_PREFIX = 'images/vid-frames-webp/frame_';
 
     // Virtual frame index runs 0 → TOTAL_FRAMES-1 across all 5 pinned sections.
     // Each section owns 149.4 virtual frames.
@@ -15,6 +15,7 @@ function initApp() {
     let loadedCount = 0;
     let isUnlocked = false;
     let triggerRedraw = null;
+    let lenisInstance = null;
 
     // Force scroll-to-top on reload
     if (history.scrollRestoration) history.scrollRestoration = 'manual';
@@ -36,36 +37,6 @@ function initApp() {
     // GPU WARM-UP — draw every frame into a 1×1 canvas so the browser decodes
     // and uploads all textures before the user starts scrolling.
     // -------------------------------------------------------------------------
-    function warmUpGPUTextures(onComplete) {
-        if (loaderInfo) loaderInfo.textContent = 'Warming up GPU cache…';
-
-        const tmp    = document.createElement('canvas');
-        tmp.width    = 1;
-        tmp.height   = 1;
-        const tmpCtx = tmp.getContext('2d');
-
-        let idx = 0;
-        function batch() {
-            const t0 = performance.now();
-            try {
-                while (idx < TOTAL_FRAMES && performance.now() - t0 < 12) {
-                    const img = images[idx];
-                    if (img && (img.naturalWidth > 0 || img.width > 0)) {
-                        tmpCtx.drawImage(img, 0, 0, 1, 1);
-                    }
-                    idx++;
-                }
-            } catch (_) { /* skip bad frame */ }
-
-            if (idx < TOTAL_FRAMES) {
-                requestAnimationFrame(batch);
-            } else {
-                onComplete();
-            }
-        }
-        requestAnimationFrame(batch);
-    }
-
     // -------------------------------------------------------------------------
     // PAGE UNLOCK
     // -------------------------------------------------------------------------
@@ -77,15 +48,13 @@ function initApp() {
         if (loaderPercent) loaderPercent.textContent = '100%';
 
         setTimeout(() => {
-            warmUpGPUTextures(() => {
-                if (preloader) preloader.classList.add('fade-out');
-                try {
-                    initCanvasScrub();
-                } catch (e) {
-                    console.error('Failed to initialize scroll cinematic:', e);
-                }
-            });
-        }, 400);
+            if (preloader) preloader.classList.add('fade-out');
+            try {
+                initCanvasScrub();
+            } catch (e) {
+                console.error('Failed to initialize scroll cinematic:', e);
+            }
+        }, 200);
     }
 
     function onFrameLoaded() {
@@ -102,27 +71,46 @@ function initApp() {
 
     // -------------------------------------------------------------------------
     // PRELOAD ALL FRAMES
+    // The last frame (index TOTAL_FRAMES-1 = frame_0747) is loaded FIRST with
+    // high priority because it is the first visible frame in reverse-order play.
     // -------------------------------------------------------------------------
-    for (let i = 0; i < TOTAL_FRAMES; i++) {
-        const img     = new Image();
-        img.decoding  = 'async';
-        const src     = FRAME_PREFIX + pad4(i + 1) + '.jpg'; // frame_0001.jpg … frame_0747.jpg
-
+    function loadFrame(i) {
+        const img    = new Image();
+        img.decoding = 'async';
         img.onload = () => {
             if (typeof img.decode === 'function') {
                 img.decode()
-                    .then(() => { images[i] = img; onFrameLoaded(); })
-                    .catch(() => { images[i] = img; onFrameLoaded(); });
+                    .then(() => { images[i] = img; onFrameLoaded(i); })
+                    .catch(() => { images[i] = img; onFrameLoaded(i); });
             } else {
                 images[i] = img;
-                onFrameLoaded();
+                onFrameLoaded(i);
             }
         };
-        img.onerror = () => {
-            // leave slot empty; canvas will just skip it
-            onFrameLoaded();
-        };
-        img.src = src;
+        img.onerror = () => { onFrameLoaded(i); };
+        img.src = FRAME_PREFIX + pad4(i + 1) + '.webp';
+    }
+
+    function onFrameLoaded(i) {
+        // If priority frame (the first-visible frame) arrives after unlock, re-render
+        if (isUnlocked && i === TOTAL_FRAMES - 1) {
+            const canvas = document.getElementById('canvas-main');
+            if (canvas) canvas.dispatchEvent(new CustomEvent('priorityFrameReady'));
+            return;
+        }
+        if (isUnlocked) return;
+        loadedCount++;
+        const pct = Math.min(99, Math.round((loadedCount / TOTAL_FRAMES) * 100));
+        if (loaderBar)     loaderBar.style.width     = pct + '%';
+        if (loaderPercent) loaderPercent.textContent = pct + '%';
+        if (loadedCount >= TOTAL_FRAMES) unlockPage();
+    }
+
+    // Load last frame first (it's shown first due to reverse playback)
+    loadFrame(TOTAL_FRAMES - 1);
+    // Then load all others
+    for (let i = 0; i < TOTAL_FRAMES - 1; i++) {
+        loadFrame(i);
     }
 
     // -------------------------------------------------------------------------
@@ -190,6 +178,18 @@ function initApp() {
             if (selectionInput) selectionInput.value = val;
             if (receiptSelection) receiptSelection.textContent = name;
             if (receiptPrice) receiptPrice.textContent = `$${parseInt(price).toLocaleString()}`;
+
+            // Update active receipt image
+            const receiptImgs = document.querySelectorAll('.receipt-img');
+            receiptImgs.forEach(img => img.classList.remove('active'));
+            const activeImg = document.querySelector(`.receipt-img[data-option="${val}"]`);
+            if (activeImg) activeImg.classList.add('active');
+
+            // Update active mobile preview image
+            const mobilePreviewImgs = document.querySelectorAll('.mobile-preview-img');
+            mobilePreviewImgs.forEach(img => img.classList.remove('active'));
+            const activeMobileImg = document.querySelector(`.mobile-preview-img[data-option="${val}"]`);
+            if (activeMobileImg) activeMobileImg.classList.add('active');
         });
     });
 
@@ -209,8 +209,13 @@ function initApp() {
     if (tensionSlider) {
         tensionSlider.addEventListener('input', (e) => {
             const val = e.target.value;
+            const kgVal = (val * 0.45359237).toFixed(1);
             if (tensionNum) tensionNum.textContent = val;
+            const tensionNumKg = document.getElementById('tension-num-kg');
+            if (tensionNumKg) tensionNumKg.textContent = kgVal;
             if (receiptTension) receiptTension.textContent = val;
+            const receiptTensionKg = document.getElementById('receipt-tension-kg');
+            if (receiptTensionKg) receiptTensionKg.textContent = kgVal;
             if (tensionDesc) {
                 tensionDesc.textContent = tensionRecommendations[val] || 'Custom Calibration';
             }
@@ -235,7 +240,14 @@ function initApp() {
                 submitBtn.style.opacity = '1';
                 formMessage.className   = 'form-message success';
                 formMessage.innerHTML   =
-                    `Allocation secured for <strong>${name}</strong>. A verification email has been dispatched to <strong>${email}</strong>.`;
+                    `Demo request recorded. This is a concept website; no real orders are processed.`;
+                
+                // Show the demo popup modal
+                const demoPopup = document.getElementById('demo-popup-modal');
+                if (demoPopup) {
+                    demoPopup.classList.add('active');
+                    if (lenisInstance) lenisInstance.stop();
+                }
                 
                 // Reset form elements
                 preorderForm.reset();
@@ -249,6 +261,18 @@ function initApp() {
                     if (receiptSelection) receiptSelection.textContent = defaultCard.querySelector('.option-name').textContent;
                     if (receiptPrice) receiptPrice.textContent = `$1,250`;
                 }
+
+                // Reset active receipt image to set
+                const receiptImgs = document.querySelectorAll('.receipt-img');
+                receiptImgs.forEach(img => img.classList.remove('active'));
+                const defaultImg = document.querySelector('.receipt-img[data-option="set"]');
+                if (defaultImg) defaultImg.classList.add('active');
+
+                // Reset active mobile preview image to set
+                const mobilePreviewImgs = document.querySelectorAll('.mobile-preview-img');
+                mobilePreviewImgs.forEach(img => img.classList.remove('active'));
+                const defaultMobileImg = document.querySelector('.mobile-preview-img[data-option="set"]');
+                if (defaultMobileImg) defaultMobileImg.classList.add('active');
                 
                 gripBtns.forEach(b => b.classList.remove('selected'));
                 const defaultGrip = document.querySelector('.grip-btn[data-value="3"]');
@@ -261,7 +285,11 @@ function initApp() {
                 if (tensionSlider) {
                     tensionSlider.value = 55;
                     if (tensionNum) tensionNum.textContent = '55';
+                    const tensionNumKg = document.getElementById('tension-num-kg');
+                    if (tensionNumKg) tensionNumKg.textContent = '24.9';
                     if (receiptTension) receiptTension.textContent = '55';
+                    const receiptTensionKg = document.getElementById('receipt-tension-kg');
+                    if (receiptTensionKg) receiptTensionKg.textContent = '24.9';
                     if (tensionDesc) tensionDesc.textContent = 'Optimal Control & Power Balance';
                 }
                 
@@ -272,40 +300,259 @@ function initApp() {
     }
 
     // -------------------------------------------------------------------------
+    // TELEMETRY RECEIPT IMAGE ZOOM / FOCUS LOGIC
+    // -------------------------------------------------------------------------
+    const receiptImageContainer = document.querySelector('.receipt-image-container');
+    const mobileImagePreview = document.querySelector('.mobile-image-preview');
+    
+    // PC Hover Backdrop
+    const focusBackdrop = document.querySelector('.image-focus-backdrop');
+    const backdropClose = document.querySelector('.backdrop-close-btn');
+
+    // Dedicated root level zoom modal elements
+    const zoomModal = document.getElementById('zoom-modal');
+    const zoomModalImg = document.getElementById('zoom-modal-img');
+    const zoomModalViewportClose = document.querySelector('.zoom-modal-viewport-close');
+    const zoomModalClose = document.querySelector('.zoom-modal-close');
+
+    function isMobileOrTouch() {
+        return window.innerWidth <= 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    }
+
+    // Helper to open the dedicated root-level zoom modal
+    function openZoomModal(containerEl) {
+        if (!zoomModal || !zoomModalImg) return;
+        const activeImg = containerEl.querySelector('img.active') || containerEl.querySelector('img');
+        if (activeImg) {
+            zoomModalImg.src = activeImg.getAttribute('src');
+            zoomModal.classList.add('active');
+            document.body.classList.add('zoom-active'); // Locks page scroll or flags state
+            if (lenisInstance) lenisInstance.stop();
+        }
+    }
+
+    function closeZoomModal(e) {
+        if (e) e.stopPropagation();
+        if (zoomModal) {
+            zoomModal.classList.remove('active');
+            document.body.classList.remove('zoom-active');
+        }
+        if (lenisInstance) lenisInstance.start();
+    }
+
+    if (receiptImageContainer) {
+        // PC Hover behavior (unrelated to root level modal click zoom)
+        receiptImageContainer.addEventListener('mouseenter', () => {
+            if (!isMobileOrTouch()) {
+                document.body.classList.add('image-focused');
+            }
+        });
+
+        receiptImageContainer.addEventListener('mouseleave', () => {
+            if (!isMobileOrTouch()) {
+                document.body.classList.remove('image-focused');
+            }
+        });
+
+        // Click to zoom triggers modal on PC and Mobile
+        receiptImageContainer.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openZoomModal(receiptImageContainer);
+        });
+    }
+
+    if (mobileImagePreview) {
+        // Click to zoom triggers modal on PC and Mobile
+        mobileImagePreview.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openZoomModal(mobileImagePreview);
+        });
+    }
+
+    // Bind modal close triggers
+    if (zoomModal) {
+        zoomModal.addEventListener('click', closeZoomModal);
+    }
+    if (zoomModalViewportClose) {
+        zoomModalViewportClose.addEventListener('click', closeZoomModal);
+    }
+    if (zoomModalClose) {
+        zoomModalClose.addEventListener('click', closeZoomModal);
+    }
+
+    // Bind PC Hover backdrop close
+    if (focusBackdrop) {
+        focusBackdrop.addEventListener('click', () => {
+            document.body.classList.remove('image-focused');
+        });
+    }
+    if (backdropClose) {
+        backdropClose.addEventListener('click', () => {
+            document.body.classList.remove('image-focused');
+        });
+    }
+
+    // -------------------------------------------------------------------------
     // INTERACTIVE SPECS HUD
     // -------------------------------------------------------------------------
     const hudCards = document.querySelectorAll('.hud-card');
     const hudNodes = document.querySelectorAll('.hud-node');
+    
+    let activePart = null;
 
-    hudCards.forEach(card => {
-        const part = card.getAttribute('data-node');
-        card.addEventListener('mouseenter', () => {
-            document.querySelectorAll(`.blueprint-${part}`).forEach(el => el.classList.add('active'));
-            const node = document.getElementById(`node-${part}`);
-            if (node) node.classList.add('active');
+    function activatePart(part) {
+        if (activePart === part) return;
+        deactivateAllParts();
+        activePart = part;
+        document.querySelectorAll(`.blueprint-${part}`).forEach(el => el.classList.add('active'));
+        const node = document.getElementById(`node-${part}`);
+        if (node) node.classList.add('active');
+        document.querySelectorAll(`.hud-card[data-node="${part}"]`).forEach(el => el.classList.add('active'));
+    }
+
+    function deactivateAllParts() {
+        activePart = null;
+        document.querySelectorAll('.blueprint-line').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.hud-node').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.hud-card').forEach(el => el.classList.remove('active'));
+    }
+
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    if (!isTouchDevice) {
+        // Desktop Hover triggers
+        hudCards.forEach(card => {
+            const part = card.getAttribute('data-node');
+            card.addEventListener('mouseenter', () => activatePart(part));
+            card.addEventListener('mouseleave', deactivateAllParts);
         });
-        
-        card.addEventListener('mouseleave', () => {
-            document.querySelectorAll(`.blueprint-${part}`).forEach(el => el.classList.remove('active'));
-            const node = document.getElementById(`node-${part}`);
-            if (node) node.classList.remove('active');
+
+        hudNodes.forEach(node => {
+            const ref = node.getAttribute('data-ref');
+            node.addEventListener('mouseenter', () => activatePart(ref));
+            node.addEventListener('mouseleave', deactivateAllParts);
+        });
+    } else {
+        // Mobile Tap-to-toggle triggers
+        hudCards.forEach(card => {
+            const part = card.getAttribute('data-node');
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (activePart === part) {
+                    deactivateAllParts();
+                } else {
+                    activatePart(part);
+                }
+            });
+        });
+
+        hudNodes.forEach(node => {
+            const ref = node.getAttribute('data-ref');
+            node.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (activePart === ref) {
+                    deactivateAllParts();
+                } else {
+                    activatePart(ref);
+                }
+            });
+        });
+
+        // Tap outside anywhere to close HUD overlays
+        document.addEventListener('click', () => {
+            deactivateAllParts();
+        });
+    }
+
+    // -------------------------------------------------------------------------
+    // DEMO POPUP MODAL & SMOOTH SCROLL ROUTERS
+    // -------------------------------------------------------------------------
+    const demoPopup = document.getElementById('demo-popup-modal');
+    const demoPopupClose = document.getElementById('demo-popup-close-btn');
+    if (demoPopup && demoPopupClose) {
+        demoPopupClose.addEventListener('click', () => {
+            demoPopup.classList.remove('active');
+            if (lenisInstance) lenisInstance.start();
+        });
+        demoPopup.addEventListener('click', (e) => {
+            if (e.target === demoPopup) {
+                demoPopup.classList.remove('active');
+                if (lenisInstance) lenisInstance.start();
+            }
+        });
+    }
+
+    // Bind nav links for smooth scroll via Lenis
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                const target = document.querySelector(href);
+                if (target) {
+                    e.preventDefault();
+                    if (lenisInstance) {
+                        lenisInstance.scrollTo(target);
+                    } else {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            }
         });
     });
 
-    hudNodes.forEach(node => {
-        const ref = node.getAttribute('data-ref');
-        node.addEventListener('mouseenter', () => {
-            node.classList.add('active');
-            document.querySelectorAll(`.blueprint-${ref}`).forEach(el => el.classList.add('active'));
-            document.querySelectorAll(`.hud-card[data-node="${ref}"]`).forEach(el => el.classList.add('active'));
+    // -------------------------------------------------------------------------
+    // LEGAL & PROTOCOL COMPLIANCE MODAL
+    // -------------------------------------------------------------------------
+    const legalModal = document.getElementById('legal-modal');
+    const legalLinks = document.querySelectorAll('.legal-link');
+    const legalTabBtns = document.querySelectorAll('.legal-tab-btn');
+    const legalBodies = document.querySelectorAll('.legal-body');
+    const legalClose = document.getElementById('legal-modal-close-btn');
+    const legalViewportClose = document.querySelector('.legal-modal-viewport-close');
+
+    function openLegalTab(tabName) {
+        legalTabBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-target') === tabName);
         });
-        
-        node.addEventListener('mouseleave', () => {
-            node.classList.remove('active');
-            document.querySelectorAll(`.blueprint-${ref}`).forEach(el => el.classList.remove('active'));
-            document.querySelectorAll(`.hud-card[data-node="${ref}"]`).forEach(el => el.classList.remove('active'));
+        legalBodies.forEach(body => {
+            body.classList.toggle('active', body.getAttribute('id') === `legal-${tabName}`);
+        });
+    }
+
+    legalLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tab = link.getAttribute('data-tab');
+            openLegalTab(tab);
+            if (legalModal) {
+                legalModal.classList.add('active');
+                if (lenisInstance) lenisInstance.stop();
+            }
         });
     });
+
+    legalTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.getAttribute('data-target');
+            openLegalTab(target);
+        });
+    });
+
+    function closeLegalModal(e) {
+        if (e) e.stopPropagation();
+        if (legalModal) legalModal.classList.remove('active');
+        if (lenisInstance) lenisInstance.start();
+    }
+
+    if (legalModal) legalModal.addEventListener('click', closeLegalModal);
+    if (legalClose) legalClose.addEventListener('click', closeLegalModal);
+    if (legalViewportClose) legalViewportClose.addEventListener('click', closeLegalModal);
+    
+    const legalContent = document.querySelector('.legal-modal-content');
+    if (legalContent) {
+        legalContent.addEventListener('click', (e) => e.stopPropagation());
+    }
 
     // -------------------------------------------------------------------------
     // CANVAS SCRUB ENGINE
@@ -313,87 +560,64 @@ function initApp() {
     function initCanvasScrub() {
         const canvas    = document.getElementById('canvas-main');
         if (!canvas) return;
-        const ctx       = canvas.getContext('2d');
+        const ctx       = canvas.getContext('2d', { alpha: false });
         const container = document.getElementById('global-canvas-container');
 
-        // Animation state — floating-point for smooth lerp
-        const anim = { current: 0, target: 0 };
+        const anim = { current: 0, target: 0, lastDrawn: -1 };
 
-        // Mouse interaction state for active parallax in Hero
-        let mouseX = 0;
-        let mouseY = 0;
-        let targetMouseX = 0;
-        let targetMouseY = 0;
+        let mouseX = 0, mouseY = 0;
+        let targetMouseX = 0, targetMouseY = 0;
+        let lastTx = null, lastTy = null;
+        let idleT = 0;
 
         window.addEventListener('mousemove', (e) => {
-            // Normalize mouse coords: -0.5 is left/top, 0.5 is right/bottom
-            targetMouseX = (e.clientX / window.innerWidth) - 0.5;
+            targetMouseX = (e.clientX / window.innerWidth)  - 0.5;
             targetMouseY = (e.clientY / window.innerHeight) - 0.5;
-        });
+        }, { passive: true });
 
         resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('resize', resizeCanvas, { passive: true });
 
         function resizeCanvas() {
             canvas.width  = window.innerWidth;
             canvas.height = window.innerHeight;
+            anim.lastDrawn = -1;
             renderFrame();
         }
 
-        // Cover-fit draw
         function drawCover(img) {
             const cw = canvas.width,  ch = canvas.height;
             const iw = img.naturalWidth  || img.width  || 1920;
             const ih = img.naturalHeight || img.height || 1080;
             if (iw === 0 || ih === 0) return;
-
             const r  = Math.max(cw / iw, ch / ih);
             const nw = iw * r, nh = ih * r;
-
-            ctx.clearRect(0, 0, cw, ch);
             ctx.drawImage(img, (cw - nw) / 2, (ch - nh) / 2, nw, nh);
         }
 
         function getImage(virtualIndex) {
             const i = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.round(virtualIndex)));
-            // Reverse index lookup to play scroll cinematic backwards
             return images[(TOTAL_FRAMES - 1) - i] || null;
         }
 
         function renderFrame() {
+            const idx = Math.round(anim.current);
+            if (idx === anim.lastDrawn) return;
             const img = getImage(anim.current);
-            if (img) drawCover(img);
+            if (!img) return;
+            anim.lastDrawn = idx;
+            drawCover(img);
         }
 
-        // Idle parallax sway & Mouse interaction
-        let idleT = 0;
-        function updateLoop() {
-            idleT += 0.008;
+        // Listen for the priority frame arriving after unlock
+        canvas.addEventListener('priorityFrameReady', () => {
+            anim.lastDrawn = -1; // force redraw
+            renderFrame();
+        });
 
-            // Smoothly lerp mouse coordinates
-            mouseX += (targetMouseX - mouseX) * 0.08;
-            mouseY += (targetMouseY - mouseY) * 0.08;
-
-            // Fade out mouse parallax as we scroll down past the hero height
-            const scrollY = window.scrollY;
-            const heroHeight = window.innerHeight || 800;
-            const factor = Math.max(0, 1 - (scrollY / heroHeight));
-
-            const maxTx = 30; // max translation in pixels
-            const maxTy = 20;
-            const tx = (-mouseX * maxTx * factor) + Math.sin(idleT) * 4;
-            const ty = (-mouseY * maxTy * factor) + Math.cos(idleT * 0.75) * 3;
-
-            canvas.style.transform = `scale(1.06) translate(${tx}px, ${ty}px)`;
-
-            const diff = anim.target - anim.current;
-            if (Math.abs(diff) > 0.08) {
-                anim.current += diff * 0.12; // faster lerp = more responsive feel
-                renderFrame();
-            }
-            requestAnimationFrame(updateLoop);
-        }
-        requestAnimationFrame(updateLoop);
+        // Show canvas immediately and draw whatever is available
+        if (container) container.style.opacity = '1';
+        renderFrame();
 
         // -----------------------------------------------------------------------
         // GSAP / LENIS / ScrollTrigger
@@ -417,11 +641,46 @@ function initApp() {
                 infinite: false,
             });
 
-            lenis.stop();
+            lenisInstance = lenis;
             lenis.on('scroll', ScrollTrigger.update);
-            gsap.ticker.add((time) => lenis.raf(time * 1000));
-            gsap.ticker.lagSmoothing(0);
             gsap.registerPlugin(ScrollTrigger);
+
+            // Single unified RAF loop
+            function unifiedRAF(time) {
+                lenis.raf(time);
+
+                // Frame lerp
+                const diff = anim.target - anim.current;
+                if (Math.abs(diff) > 0.08) {
+                    anim.current += diff * 0.12;
+                    renderFrame();
+                }
+
+                // Mouse parallax — only active in hero section
+                const scrollY = window.scrollY;
+                const heroHeight = window.innerHeight || 800;
+                const factor = Math.max(0, 1 - (scrollY / heroHeight));
+
+                if (factor > 0) {
+                    mouseX += (targetMouseX - mouseX) * 0.08;
+                    mouseY += (targetMouseY - mouseY) * 0.08;
+
+                    const tx = (-mouseX * 30 * factor);
+                    const ty = (-mouseY * 20 * factor);
+
+                    if (lastTx === null || Math.abs(tx - lastTx) > 0.15 || Math.abs(ty - lastTy) > 0.15) {
+                        canvas.style.transform = `scale(1.06) translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px)`;
+                        lastTx = tx; lastTy = ty;
+                    }
+                } else if (lastTx !== null) {
+                    // Reset transform when outside hero so it doesn't linger
+                    canvas.style.transform = 'scale(1.06)';
+                    lastTx = null; lastTy = null;
+                }
+
+                requestAnimationFrame(unifiedRAF);
+            }
+            requestAnimationFrame(unifiedRAF);
 
             // Initial hidden states
             gsap.set([
@@ -434,23 +693,19 @@ function initApp() {
             gsap.set('#chapter-orbit [data-gsap-fade]',     { opacity: 0, y: 35 });
             gsap.set('#chapter-orbit .scroll-cue',          { opacity: 0 });
 
-            // Cinematic entrance
-            const entrance = gsap.timeline({ delay: 0.4 });
+            // Cinematic entrance (canvas no longer needs to be faded in — it's already visible)
+            const entrance = gsap.timeline({ delay: 0.2 });
             entrance
-                .to('.main-header', { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' })
+                .to('.main-header', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' })
                 .to('#chapter-orbit [data-gsap-fade]', {
-                    opacity: 1, y: 0, duration: 1.0, stagger: 0.15, ease: 'power3.out',
+                    opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out',
                 }, '+=0')
                 .to('#chapter-orbit .scroll-cue', {
-                    opacity: 1, duration: 0.8, ease: 'power2.out',
-                }, '-=0.5')
-                .to('#global-canvas-container', {
-                    opacity: 1, duration: 0.6, ease: 'power2.inOut',
-                    onComplete: () => {
-                        lenis.start();
-                        initScrollAnimations();
-                    },
-                }, '+=0.2');
+                    opacity: 1, duration: 0.4, ease: 'power2.out',
+                }, '-=0.3');
+
+            // Initialize scroll animations immediately so scrolling works from the start
+            initScrollAnimations();
 
             // ----------------------------------------------------------------
             // SCROLL ANIMATIONS
