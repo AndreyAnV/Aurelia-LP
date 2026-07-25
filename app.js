@@ -67,19 +67,33 @@ function initApp() {
     function onFrameLoaded() {
         if (isUnlocked) return;
         loadedCount++;
-        const pct = Math.min(99, Math.round((loadedCount / TOTAL_FRAMES) * 100));
+        const pct = Math.min(99, Math.round((loadedCount / expectedLoads) * 100));
         if (loaderBar)     loaderBar.style.width     = pct + '%';
         if (loaderPercent) loaderPercent.textContent = pct + '%';
-        if (loadedCount >= TOTAL_FRAMES) unlockPage();
+        if (loadedCount >= expectedLoads) unlockPage();
     }
 
     // Safety timeout — force unlock after 3 s even if some frames fail
     setTimeout(() => { if (!isUnlocked) unlockPage(); }, 3000);
 
+    // Determine frame loading step based on mobile/performance configuration.
+    // On mobile/tablets, we skip frames (step = 3) to prevent browser out-of-memory crash.
+    // On desktop, we load all frames (step = 1) for 60fps cinematic fluidity.
+    const isMobile = window.innerWidth < 768 || /Mobi|Android|iPhone|iPad|Macintosh/i.test(navigator.userAgent) && ('ontouchstart' in window);
+    const LOAD_STEP = isMobile ? 3 : 1;
+
+    // Build loading queue
+    const framesToLoad = [];
+    framesToLoad.push(TOTAL_FRAMES - 1); // Always load the priority first-visible frame
+    for (let i = 0; i < TOTAL_FRAMES - 1; i++) {
+        if (i % LOAD_STEP === 0) {
+            framesToLoad.push(i);
+        }
+    }
+    const expectedLoads = framesToLoad.length;
+
     // -------------------------------------------------------------------------
     // PRELOAD ALL FRAMES
-    // The last frame (index TOTAL_FRAMES-1 = frame_0747) is loaded FIRST with
-    // high priority because it is the first visible frame in reverse-order play.
     // -------------------------------------------------------------------------
     function loadFrame(i) {
         const img = new Image();
@@ -107,18 +121,16 @@ function initApp() {
         }
         if (isUnlocked) return;
         loadedCount++;
-        const pct = Math.min(99, Math.round((loadedCount / TOTAL_FRAMES) * 100));
+        const pct = Math.min(99, Math.round((loadedCount / expectedLoads) * 100));
         if (loaderBar)     loaderBar.style.width     = pct + '%';
         if (loaderPercent) loaderPercent.textContent = pct + '%';
-        if (loadedCount >= TOTAL_FRAMES) unlockPage();
+        if (loadedCount >= expectedLoads) unlockPage();
     }
 
-    // Load last frame first (it's shown first due to reverse playback)
-    loadFrame(TOTAL_FRAMES - 1);
-    // Then load all others
-    for (let i = 0; i < TOTAL_FRAMES - 1; i++) {
+    // Trigger loads
+    framesToLoad.forEach(i => {
         loadFrame(i);
-    }
+    });
 
     // -------------------------------------------------------------------------
     // PREORDER CONFIGURATOR & RECEIPT TERMINAL
@@ -604,7 +616,21 @@ function initApp() {
 
         function getImage(virtualIndex) {
             const i = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.round(virtualIndex)));
-            return images[(TOTAL_FRAMES - 1) - i] || null;
+            const actualIndex = (TOTAL_FRAMES - 1) - i;
+            
+            // Fast path: target image is loaded
+            if (images[actualIndex]) return images[actualIndex];
+            
+            // Fallback path: search outward for the nearest loaded frame
+            let offset = 1;
+            while (offset < TOTAL_FRAMES) {
+                const prev = actualIndex - offset;
+                const next = actualIndex + offset;
+                if (prev >= 0 && images[prev]) return images[prev];
+                if (next < TOTAL_FRAMES && images[next]) return images[next];
+                offset++;
+            }
+            return null;
         }
 
         function renderFrame() {
