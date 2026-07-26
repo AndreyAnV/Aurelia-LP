@@ -1,6 +1,4 @@
-/* styles.css */
 
-/* --- CSS Variables & Design System --- */
 :root {
     --color-bg: #050505;
     --color-bg-darker: #020202;
@@ -17,7 +15,6 @@
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* --- Base Styles --- */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -41,7 +38,6 @@ body::-webkit-scrollbar {
     display: none;
 }
 
-/* --- Typography Utilities --- */
 .font-serif {
     font-family: var(--font-serif);
 }
@@ -50,7 +46,6 @@ body::-webkit-scrollbar {
     font-family: var(--font-grotesque);
 }
 
-/* --- Preloader --- */
 .preloader {
     position: fixed;
     top: 0;
@@ -124,7 +119,6 @@ body::-webkit-scrollbar {
     50% { opacity: 1; }
 }
 
-/* --- Header / Navigation --- */
 .main-header {
     position: fixed;
     top: 0;
@@ -188,7 +182,6 @@ body::-webkit-scrollbar {
     width: 100%;
 }
 
-/* --- Global Fixed Canvas Background --- */
 .canvas-container {
     position: fixed;
     top: 0;
@@ -226,7 +219,6 @@ body::-webkit-scrollbar {
     pointer-events: none;
 }
 
-/* --- Pinned Scroll Chapters --- */
 .pinned-section {
     position: relative;
     width: 100vw;
@@ -276,7 +268,6 @@ body::-webkit-scrollbar {
     text-align: right;
 }
 
-/* --- Text Elements & Fades --- */
 .hero-overline {
     font-size: 0.85rem;
     letter-spacing: 0.4em;
@@ -352,7 +343,6 @@ body::-webkit-scrollbar {
     100% { transform: translateY(100%); }
 }
 
-/* --- Manifesto / Line Reveals --- */
 .manifesto-lines {
     display: flex;
     flex-direction: column;
@@ -375,7 +365,6 @@ body::-webkit-scrollbar {
     transform: translateY(0);
 }
 
-/* --- Chapter Labels --- */
 .chapter-label {
     font-size: 1.2rem;
     font-weight: 600;
@@ -390,7 +379,6 @@ body::-webkit-scrollbar {
     line-height: 1.3;
 }
 
-/* --- Macro Details Block --- */
 .macro-text-block {
     max-width: 450px;
     display: flex;
@@ -411,7 +399,6 @@ body::-webkit-scrollbar {
     color: var(--color-text-muted);
 }
 
-/* --- Tech Callouts Layer --- */
 .tech-callouts-layer {
     position: absolute;
     top: 0;
@@ -494,7 +481,6 @@ body::-webkit-scrollbar {
     color: var(--color-text);
 }
 
-/* --- Specifications Section --- */
 .specs-section {
     position: relative;
     padding: 12vh 8vw 8vh 8vw;
@@ -527,7 +513,6 @@ body::-webkit-scrollbar {
     letter-spacing: 0.1em;
 }
 
-/* --- Interactive Specs HUD Layout --- */
 .hud-grid-overlay {
     position: absolute;
     top: 0;
@@ -634,7 +619,6 @@ body::-webkit-scrollbar {
     transform: translateX(-5px);
 }
 
-/* Center Column: Schematic */
 .schematic-container {
     position: relative;
     background: rgba(5, 5, 5, 0.4);
@@ -718,7 +702,6 @@ body::-webkit-scrollbar {
     100% { transform: translateY(100%); }
 }
 
-/* --- Telemetry Receipt Image Preview Features --- */
 .receipt-image-container {
     position: relative;
     width: 100%;
@@ -781,12 +764,10 @@ body::-webkit-scrollbar {
     visibility: visible;
 }
 
-/* Mobile image preview hidden by default on desktop */
 .mobile-image-preview {
     display: none;
 }
 
-/* Blur Backdrop */
 .image-focus-backdrop {
     position: fixed;
     top: 0;
@@ -830,14 +811,12 @@ body::-webkit-scrollbar {
     transform: scale(1.05);
 }
 
-/* Blurred state triggers - Raise preorder section above backdrop to avoid infinite loop */
 body.image-focused .preorder-section,
 body.receipt-image-zoomed .preorder-section,
 body.mobile-image-zoomed .preorder-section {
     z-index: 999 !important;
 }
 
-/* Blur other form items when image is focused/zoomed */
 body.image-focused #preorder-form > :not(.config-step:first-of-type),
 body.image-focused .configurator-header,
 body.image-focused .receipt-body,
@@ -849,7 +828,6 @@ body.image-focused .footer {
     transition: filter 0.4s ease, opacity 0.4s ease;
 }
 
-/* Focus and Zoomed layout updates */
 body.image-focused {
     overflow: hidden;
 }
@@ -870,7 +848,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     opacity: 1;
 }
 
-/* Dedicated Fullscreen Zoom Modal styles */
 .zoom-modal {
     position: fixed;
     top: 0;
@@ -969,7 +946,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     transform: scale(1.05);
 }
 
-/* --- Preorder & Configurator Section --- */
 .preorder-section {
     position: relative;
     padding: 6vh 8vw 5vh 8vw;
@@ -1047,7 +1023,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     margin-left: 5px;
 }
 
-/* Configurator Layout */
 .configurator-body {
     display: grid;
     grid-template-columns: 1.25fr 0.75fr;
@@ -1100,7 +1075,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     gap: 15px;
 }
 
-/* Option Cards Selection */
 .option-grid {
     display: flex;
     flex-direction: column;
@@ -1175,7 +1149,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     padding-right: 35px;
 }
 
-/* Grip Buttons */
 .grip-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -1206,7 +1179,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     font-weight: 500;
 }
 
-/* Tension Slider */
 .tension-slider-wrapper {
     display: flex;
     flex-direction: column;
@@ -1258,7 +1230,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     transform: scale(1.3);
 }
 
-/* Form inputs & dynamic focus lines */
 .form-row-2col {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1325,7 +1296,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     color: var(--color-text-muted);
 }
 
-/* Button & futuristic charging/scanning sweep */
 .btn {
     display: inline-flex;
     justify-content: center;
@@ -1404,7 +1374,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     color: #D36565;
 }
 
-/* --- Telemetry Receipt Panel --- */
 .receipt-container {
     background: rgba(255, 255, 255, 0.015);
     border: 1px dashed var(--color-border);
@@ -1530,7 +1499,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     color: var(--color-text-muted);
 }
 
-/* --- Footer --- */
 .footer {
     border-top: 1px solid var(--color-border);
     padding: 40px 0 0 0;
@@ -1556,7 +1524,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     color: var(--color-accent);
 }
 
-/* --- Responsive Media Queries --- */
 @media (max-width: 1024px) {
     .specs-hud-wrapper {
         grid-template-columns: 1fr 1fr;
@@ -1608,7 +1575,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
         padding: 30px 25px;
     }
 
-    /* Mobile Inline Image Preview */
     .mobile-image-preview {
         display: block;
         position: relative;
@@ -1644,7 +1610,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
         transform: scale(1.05);
     }
 
-    /* Hide the receipt's duplicate image container on mobile */
     .receipt-container .receipt-image-container {
         display: none !important;
     }
@@ -1725,7 +1690,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
         text-align: center;
     }
 
-    /* Smaller spec cards for mobile */
     .hud-card {
         padding: 12px 15px;
     }
@@ -1737,7 +1701,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     }
 }
 
-/* Dedicated Demo Popup Modal styles */
 .demo-popup-modal {
     position: fixed;
     top: 0;
@@ -1819,7 +1782,6 @@ body.image-focused .receipt-image-container .receipt-img.active {
     box-shadow: 0 0 15px rgba(176, 141, 87, 0.25);
 }
 
-/* Dedicated Legal Modal styles */
 .legal-modal {
     position: fixed;
     top: 0;
@@ -1968,4 +1930,16 @@ body.image-focused .receipt-image-container .receipt-img.active {
     border-color: var(--color-accent);
     color: var(--color-accent);
     transform: scale(1.05);
+}
+
+/* Respect the system accessibility setting and avoid non-essential motion. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
 }

@@ -11,13 +11,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-
-    
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Preloader -->
     <div id="preloader" class="preloader">
         <div class="loader-content">
             <div class="loader-title">AURELIA</div>
@@ -29,7 +26,6 @@
         </div>
     </div>
 
-    <!-- Navigation Header -->
     <header class="main-header">
         <div class="header-logo">
             <img src="images/AR-logo.png" alt="Aurelia Logo">
@@ -41,17 +37,13 @@
         </nav>
     </header>
 
-    <!-- Global Fixed Canvas Background -->
     <div id="global-canvas-container" class="canvas-container" style="opacity: 0;">
         <canvas id="canvas-main"></canvas>
         <div class="canvas-overlay"></div>
     </div>
 
-    <!-- Scroll Container -->
     <main class="scroll-container">
         
-
-        <!-- CHAPTER 1: HERO ORBIT -->
         <section id="chapter-orbit" class="pinned-section">
             <div class="slide-content center-align">
                 <p class="hero-overline font-grotesque" data-gsap-fade>THE R-1. PRECISION, REFINED.</p>
@@ -67,7 +59,6 @@
             </div>
         </section>
 
-        <!-- CHAPTER 2: MANIFESTO -->
         <section id="chapter-manifesto" class="pinned-section">
             <div class="slide-content left-align">
                 <div class="manifesto-lines">
@@ -78,9 +69,7 @@
             </div>
         </section>
 
-        <!-- CHAPTER 3: THE EXPLOSION -->
         <section id="chapter-explode" class="pinned-section">
-            <!-- Tech callouts overlaying the canvas during explosion scrub -->
             <div class="tech-callouts-layer">
                 <div id="callout-1" class="tech-callout" style="top: 30%; left: 15%;">
                     <div class="callout-line"></div>
@@ -117,14 +106,12 @@
             </div>
         </section>
 
-        <!-- CHAPTER 4: REASSEMBLY -->
         <section id="chapter-reassembly" class="pinned-section">
             <div class="slide-content center-align">
                 <h2 class="step-text font-serif" data-gsap-fade>Every strike, remembered.</h2>
             </div>
         </section>
 
-        <!-- CHAPTER 5: THE MACRO DETAILS -->
         <section id="chapter-macro" class="pinned-section">
             <div class="slide-content right-align">
                 <div class="macro-text-block">
@@ -134,7 +121,6 @@
             </div>
         </section>
 
-        <!-- CHAPTER 6: SPECIFICATIONS (Interactive Technical HUD Layout) -->
         <section id="section-specs" class="specs-section">
             <div class="container">
                 <div class="hud-grid-overlay"></div>
@@ -167,16 +153,13 @@
                     <div class="schematic-container">
                         <div class="scanline"></div>
                         <svg class="racket-blueprint" viewBox="0 0 200 500">
-                            <!-- Grid background -->
                             <pattern id="hud-grid" width="20" height="20" patternUnits="userSpaceOnUse">
                                 <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(176, 141, 87, 0.05)" stroke-width="0.75" />
                             </pattern>
                             <rect width="100%" height="100%" fill="url(#hud-grid)" />
                             
-                            <!-- Racket Blueprint Lines -->
                             <!-- Racket Head -->
                             <ellipse cx="100" cy="130" rx="55" ry="80" class="blueprint-line blueprint-head" />
-                            <!-- String lines (horizontal and vertical) for high-tech HUD look -->
                             <g class="blueprint-strings" opacity="0.15">
                                 <line x1="100" y1="50" x2="100" y2="210" stroke="var(--color-text)" stroke-width="0.5" />
                                 <line x1="90" y1="51" x2="90" y2="209" stroke="var(--color-text)" stroke-width="0.5" />
@@ -216,7 +199,6 @@
                                 <line x1="92" y1="480" x2="108" y2="485" stroke="var(--color-text)" stroke-width="0.5" />
                             </g>
 
-                            <!-- Calibration Crosshairs -->
                             <circle cx="100" cy="130" r="70" stroke="rgba(237, 234, 228, 0.05)" stroke-width="0.5" fill="none" stroke-dasharray="2 4" />
                             <circle cx="100" cy="130" r="3" stroke="var(--color-accent)" stroke-width="0.5" fill="none" />
                             <line x1="100" y1="30" x2="100" y2="40" stroke="rgba(237, 234, 228, 0.3)" stroke-width="0.5" />
@@ -224,7 +206,6 @@
                             <line x1="10" y1="130" x2="20" y2="130" stroke="rgba(237, 234, 228, 0.3)" stroke-width="0.5" />
                             <line x1="180" y1="130" x2="190" y2="130" stroke="rgba(237, 234, 228, 0.3)" stroke-width="0.5" />
 
-                            <!-- Interactive Target Nodes -->
                             <g class="hud-node" id="node-head" data-ref="head">
                                 <circle cx="100" cy="130" r="18" fill="transparent" style="cursor: pointer;" />
                                 <circle cx="100" cy="130" r="6" fill="var(--color-accent)" opacity="0.2" class="node-pulse" />
@@ -270,10 +251,8 @@
             </div>
         </section>
 
-        <!-- CHAPTER 7: PREORDER / CTA -->
         <section id="section-preorder" class="preorder-section">
             <div class="container">
-                <!-- Configurator Panel -->
                 <div class="configurator-panel">
                     <div class="configurator-header">
                         <p class="section-overline font-grotesque">RESERVE YOUR ALLOCATION</p>
@@ -291,12 +270,10 @@
                     <div class="configurator-body">
                         <!-- Left Side: interactive configurator form -->
                         <form id="preorder-form" class="preorder-form">
-                            <!-- Config step 1: Selection -->
                             <div class="config-step">
                                 <span class="step-num font-grotesque">01</span>
                                 <label class="font-grotesque label-title">Choose Allocation Option</label>
                                 
-                                <!-- Mobile Inline Image Preview - now placed ABOVE options! -->
                                 <div class="mobile-image-preview">
                                     <img src="images/1x-racket.png" alt="Aurelia R-1 Single Racket" class="mobile-preview-img" data-option="single">
                                     <img src="images/complete-set.png" alt="The Aurelia Complete Set" class="mobile-preview-img active" data-option="set">
@@ -327,11 +304,9 @@
                                         <p class="option-desc font-grotesque">Two custom R-1 rackets and the complete leather duffle bag set. Ultimate tournament setup.</p>
                                     </div>
                                 </div>
-                                <!-- Hidden input for form submission to keep original JS functional -->
                                 <input type="hidden" id="selection" name="selection" value="set" required>
                             </div>
                             
-                            <!-- Config step 2: Grip Size & Custom Tension -->
                             <div class="config-step grid-2col">
                                 <div class="config-substep">
                                     <span class="step-num font-grotesque">02</span>
@@ -343,7 +318,6 @@
                                         <button type="button" class="grip-btn" data-value="4">4</button>
                                         <button type="button" class="grip-btn" data-value="5">5</button>
                                     </div>
-                                    <!-- Hidden input for grip selection -->
                                     <input type="hidden" id="grip_size" name="grip_size" value="3">
                                 </div>
                                 <div class="config-substep">
@@ -359,7 +333,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Config step 3: Contact details -->
                             <div class="config-step">
                                 <span class="step-num font-grotesque">04</span>
                                 <label class="font-grotesque label-title">Submit Credentials</label>
@@ -380,7 +353,6 @@
                                 <label for="newsletter" class="font-grotesque">Include custom tension consulting call</label>
                             </div>
                             
-                            <!-- Submit container -->
                             <button type="submit" id="submit-btn" class="btn submit-btn-futuristic font-grotesque">
                                 <span>REQUEST ALLOCATION</span>
                                 <div class="btn-shine"></div>
@@ -388,14 +360,12 @@
                             <div id="form-message" class="form-message font-grotesque"></div>
                         </form>
 
-                        <!-- Right Side: Real-time telemetry receipt -->
                         <div class="receipt-container font-grotesque">
                             <div class="receipt-header">
                                 <span class="receipt-title">ALLOCATION TELEMETRY</span>
                                 <span class="serial-tag" id="receipt-serial">AUR-R1-PENDING</span>
                             </div>
                             
-                            <!-- Dynamic images corresponding to allocation options -->
                             <div class="receipt-image-container">
                                 <img src="images/1x-racket.png" alt="Aurelia R-1 Single Racket" class="receipt-img" data-option="single">
                                 <img src="images/complete-set.png" alt="The Aurelia Complete Set" class="receipt-img active" data-option="set">
@@ -448,11 +418,9 @@
             </footer>
         </section>
     </main>
-    <!-- Fullscreen Blur Backdrop for image zoom/hover -->
     <div class="image-focus-backdrop"></div>
     <div class="backdrop-close-btn font-grotesque">&times;</div>
 
-    <!-- Dedicated Fullscreen Zoom Modal (escapes scroll container stacking contexts) -->
     <div class="zoom-modal" id="zoom-modal">
         <div class="zoom-modal-viewport-close font-grotesque">&times;</div>
         <div class="zoom-modal-content">
@@ -461,7 +429,6 @@
         </div>
     </div>
 
-    <!-- Dedicated Demo Popup Modal -->
     <div class="demo-popup-modal" id="demo-popup-modal">
         <div class="demo-popup-content">
             <span class="demo-popup-overline font-grotesque">SYSTEM NOTIFICATION</span>
@@ -473,7 +440,6 @@
         </div>
     </div>
 
-    <!-- Dedicated Legal & Protocol Compliance Modal -->
     <div class="legal-modal" id="legal-modal">
         <div class="legal-modal-viewport-close font-grotesque">&times;</div>
         <div class="legal-modal-content">
@@ -524,13 +490,9 @@
         </div>
     </div>
 
-    <!-- JS Scripts -->
-    <!-- GSAP for scroll animation performance -->
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-    <!-- Lenis for high-performance smooth scroll -->
     <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
-    <!-- Main Application Code -->
     <script src="app.js"></script>
 </body>
 </html>

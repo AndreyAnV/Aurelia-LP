@@ -1,9 +1,5 @@
-// app.js — Frame scrub using vid-frames-webp (WebP, ~70 MB vs 3.5 GB PNG)
 
 function initApp() {
-    // -------------------------------------------------------------------------
-    // CONFIG
-    // -------------------------------------------------------------------------
     const TOTAL_FRAMES = 747;
     const FRAME_PREFIX = 'images/vid-frames-webp/frame_';
 
@@ -30,20 +26,9 @@ function initApp() {
     const loaderPercent = document.getElementById('loader-percent');
     const loaderInfo   = document.querySelector('.loader-info');
 
-    // -------------------------------------------------------------------------
-    // HELPERS
-    // -------------------------------------------------------------------------
     function pad4(n) {
         return String(n).padStart(4, '0');
     }
-
-    // -------------------------------------------------------------------------
-    // GPU WARM-UP — draw every frame into a 1×1 canvas so the browser decodes
-    // and uploads all textures before the user starts scrolling.
-    // -------------------------------------------------------------------------
-    // -------------------------------------------------------------------------
-    // PAGE UNLOCK
-    // -------------------------------------------------------------------------
     function unlockPage() {
         if (isUnlocked) return;
         isUnlocked = true;
@@ -73,7 +58,6 @@ function initApp() {
         if (loadedCount >= expectedLoads) unlockPage();
     }
 
-    // Safety timeout — force unlock after 3 s even if some frames fail
     setTimeout(() => { if (!isUnlocked) unlockPage(); }, 3000);
 
     // Determine frame loading step based on mobile/performance configuration.
@@ -82,7 +66,6 @@ function initApp() {
     const isMobile = window.innerWidth < 768 || /Mobi|Android|iPhone|iPad|Macintosh/i.test(navigator.userAgent) && ('ontouchstart' in window);
     const LOAD_STEP = isMobile ? 3 : 1;
 
-    // Build loading queue
     const framesToLoad = [];
     framesToLoad.push(TOTAL_FRAMES - 1); // Always load the priority first-visible frame
     for (let i = 0; i < TOTAL_FRAMES - 1; i++) {
@@ -92,9 +75,6 @@ function initApp() {
     }
     const expectedLoads = framesToLoad.length;
 
-    // -------------------------------------------------------------------------
-    // PRELOAD ALL FRAMES
-    // -------------------------------------------------------------------------
     function loadFrame(i) {
         const img = new Image();
         img.decoding = 'async';
@@ -127,14 +107,10 @@ function initApp() {
         if (loadedCount >= expectedLoads) unlockPage();
     }
 
-    // Trigger loads
     framesToLoad.forEach(i => {
         loadFrame(i);
     });
 
-    // -------------------------------------------------------------------------
-    // PREORDER CONFIGURATOR & RECEIPT TERMINAL
-    // -------------------------------------------------------------------------
     const preorderForm = document.getElementById('preorder-form');
     const formMessage  = document.getElementById('form-message');
     const submitBtn    = document.getElementById('submit-btn');
@@ -181,10 +157,8 @@ function initApp() {
         }
     }
     
-    // Initialize receipt serial number
     generateSerial();
 
-    // Option cards event listeners
     optionCards.forEach(card => {
         card.addEventListener('click', () => {
             optionCards.forEach(c => c.classList.remove('selected'));
@@ -212,7 +186,6 @@ function initApp() {
         });
     });
 
-    // Grip size event listeners
     gripBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             gripBtns.forEach(b => b.classList.remove('selected'));
@@ -224,7 +197,6 @@ function initApp() {
         });
     });
 
-    // Tension range event listener
     if (tensionSlider) {
         tensionSlider.addEventListener('input', (e) => {
             const val = e.target.value;
@@ -241,7 +213,6 @@ function initApp() {
         });
     }
 
-    // Submit handler
     if (preorderForm) {
         preorderForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -268,10 +239,8 @@ function initApp() {
                     if (lenisInstance) lenisInstance.stop();
                 }
                 
-                // Reset form elements
                 preorderForm.reset();
                 
-                // Reset interactive configurator elements to defaults
                 optionCards.forEach(c => c.classList.remove('selected'));
                 const defaultCard = document.querySelector('.option-card[data-value="set"]');
                 if (defaultCard) {
@@ -281,13 +250,11 @@ function initApp() {
                     if (receiptPrice) receiptPrice.textContent = `$1,250`;
                 }
 
-                // Reset active receipt image to set
                 const receiptImgs = document.querySelectorAll('.receipt-img');
                 receiptImgs.forEach(img => img.classList.remove('active'));
                 const defaultImg = document.querySelector('.receipt-img[data-option="set"]');
                 if (defaultImg) defaultImg.classList.add('active');
 
-                // Reset active mobile preview image to set
                 const mobilePreviewImgs = document.querySelectorAll('.mobile-preview-img');
                 mobilePreviewImgs.forEach(img => img.classList.remove('active'));
                 const defaultMobileImg = document.querySelector('.mobile-preview-img[data-option="set"]');
@@ -312,23 +279,17 @@ function initApp() {
                     if (tensionDesc) tensionDesc.textContent = 'Optimal Control & Power Balance';
                 }
                 
-                // Regenerate serial number
                 generateSerial();
             }, 1500);
         });
     }
 
-    // -------------------------------------------------------------------------
-    // TELEMETRY RECEIPT IMAGE ZOOM / FOCUS LOGIC
-    // -------------------------------------------------------------------------
     const receiptImageContainer = document.querySelector('.receipt-image-container');
     const mobileImagePreview = document.querySelector('.mobile-image-preview');
     
-    // PC Hover Backdrop
     const focusBackdrop = document.querySelector('.image-focus-backdrop');
     const backdropClose = document.querySelector('.backdrop-close-btn');
 
-    // Dedicated root level zoom modal elements
     const zoomModal = document.getElementById('zoom-modal');
     const zoomModalImg = document.getElementById('zoom-modal-img');
     const zoomModalViewportClose = document.querySelector('.zoom-modal-viewport-close');
@@ -338,7 +299,6 @@ function initApp() {
         return window.innerWidth <= 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     }
 
-    // Helper to open the dedicated root-level zoom modal
     function openZoomModal(containerEl) {
         if (!zoomModal || !zoomModalImg) return;
         const activeImg = containerEl.querySelector('img.active') || containerEl.querySelector('img');
@@ -360,7 +320,6 @@ function initApp() {
     }
 
     if (receiptImageContainer) {
-        // PC Hover behavior (unrelated to root level modal click zoom)
         receiptImageContainer.addEventListener('mouseenter', () => {
             if (!isMobileOrTouch()) {
                 document.body.classList.add('image-focused');
@@ -373,7 +332,6 @@ function initApp() {
             }
         });
 
-        // Click to zoom triggers modal on PC and Mobile
         receiptImageContainer.addEventListener('click', (e) => {
             e.stopPropagation();
             openZoomModal(receiptImageContainer);
@@ -381,14 +339,12 @@ function initApp() {
     }
 
     if (mobileImagePreview) {
-        // Click to zoom triggers modal on PC and Mobile
         mobileImagePreview.addEventListener('click', (e) => {
             e.stopPropagation();
             openZoomModal(mobileImagePreview);
         });
     }
 
-    // Bind modal close triggers
     if (zoomModal) {
         zoomModal.addEventListener('click', closeZoomModal);
     }
@@ -399,7 +355,6 @@ function initApp() {
         zoomModalClose.addEventListener('click', closeZoomModal);
     }
 
-    // Bind PC Hover backdrop close
     if (focusBackdrop) {
         focusBackdrop.addEventListener('click', () => {
             document.body.classList.remove('image-focused');
@@ -411,9 +366,6 @@ function initApp() {
         });
     }
 
-    // -------------------------------------------------------------------------
-    // INTERACTIVE SPECS HUD
-    // -------------------------------------------------------------------------
     const hudCards = document.querySelectorAll('.hud-card');
     const hudNodes = document.querySelectorAll('.hud-node');
     
@@ -483,9 +435,6 @@ function initApp() {
         });
     }
 
-    // -------------------------------------------------------------------------
-    // DEMO POPUP MODAL & SMOOTH SCROLL ROUTERS
-    // -------------------------------------------------------------------------
     const demoPopup = document.getElementById('demo-popup-modal');
     const demoPopupClose = document.getElementById('demo-popup-close-btn');
     if (demoPopup && demoPopupClose) {
@@ -520,9 +469,6 @@ function initApp() {
         });
     });
 
-    // -------------------------------------------------------------------------
-    // LEGAL & PROTOCOL COMPLIANCE MODAL
-    // -------------------------------------------------------------------------
     const legalModal = document.getElementById('legal-modal');
     const legalLinks = document.querySelectorAll('.legal-link');
     const legalTabBtns = document.querySelectorAll('.legal-tab-btn');
@@ -573,9 +519,6 @@ function initApp() {
         legalContent.addEventListener('click', (e) => e.stopPropagation());
     }
 
-    // -------------------------------------------------------------------------
-    // CANVAS SCRUB ENGINE
-    // -------------------------------------------------------------------------
     function initCanvasScrub() {
         const canvas    = document.getElementById('canvas-main');
         if (!canvas) return;
@@ -652,9 +595,16 @@ function initApp() {
         if (container) container.style.opacity = '1';
         renderFrame();
 
-        // -----------------------------------------------------------------------
-        // GSAP / LENIS / ScrollTrigger
-        // -----------------------------------------------------------------------
+        // Keep the landing page comfortable and responsive for visitors who
+        // have explicitly asked their operating system to reduce motion.
+        // The priority frame remains visible, but we skip smooth scrolling,
+        // scroll pinning, and continuous animation work.
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+            canvas.style.transform = 'none';
+            return;
+        }
+
         if (typeof Lenis === 'undefined' ||
             typeof gsap === 'undefined' ||
             typeof ScrollTrigger === 'undefined') {
@@ -716,7 +666,6 @@ function initApp() {
             }
             requestAnimationFrame(unifiedRAF);
 
-            // Initial hidden states
             gsap.set([
                 '#chapter-explode [data-gsap-fade]',
                 '#chapter-reassembly [data-gsap-fade]',
@@ -738,27 +687,19 @@ function initApp() {
                     opacity: 1, duration: 0.4, ease: 'power2.out',
                 }, '-=0.3');
 
-            // Initialize scroll animations immediately so scrolling works from the start
             initScrollAnimations();
 
-            // ----------------------------------------------------------------
-            // SCROLL ANIMATIONS
             // 5 sections × 60 virtual frames each
             //   Section 1 (orbit):      frames   0 →  59
             //   Section 2 (manifesto):  frames  60 → 119
             //   Section 3 (explode):    frames 120 → 179
             //   Section 4 (reassembly): frames 180 → 239
             //   Section 5 (macro):      frames 240 → 299
-            // ----------------------------------------------------------------
             function initScrollAnimations() {
 
-                // ============================================================
-                // PER-SECTION: PIN + TEXT ANIMATIONS
                 // All pins created FIRST so spacers exist before the master
                 // frame controller calculates #section-specs position.
-                // ============================================================
 
-                // 1. HERO ORBIT — pin only
                 ScrollTrigger.create({
                     trigger: '#chapter-orbit',
                     start: 'top top',
@@ -785,7 +726,6 @@ function initApp() {
                     },
                 });
 
-                // 2. MANIFESTO — pin + line reveals
                 const manifestoTL = gsap.timeline({
                     scrollTrigger: {
                         trigger: '#chapter-manifesto',
@@ -802,7 +742,6 @@ function initApp() {
                     .to('#chapter-manifesto .manifesto-line:nth-child(3)', { opacity: 1, y: 0, duration: 1.5 }, 2.5)
                     .to('#chapter-manifesto .manifesto-line',              { opacity: 0, y: -30, duration: 1.5 }, 4.5);
 
-                // 3. EXPLODE — pin + callouts
                 const explodeTL = gsap.timeline({
                     scrollTrigger: {
                         trigger: '#chapter-explode',
@@ -828,7 +767,6 @@ function initApp() {
                     .to('#chapter-explode [data-gsap-fade]', { opacity: 1, y: 0, duration: 1.5 }, 0.2)
                     .to('#chapter-explode [data-gsap-fade]', { opacity: 0, y: -30, duration: 1.5 }, 4.5);
 
-                // 4. REASSEMBLY — pin + text
                 const reassemblyTL = gsap.timeline({
                     scrollTrigger: {
                         trigger: '#chapter-reassembly',
@@ -843,7 +781,6 @@ function initApp() {
                     .to('#chapter-reassembly [data-gsap-fade]', { opacity: 1, y: 0, duration: 1.5 }, 0.2)
                     .to('#chapter-reassembly [data-gsap-fade]', { opacity: 0, y: -30, duration: 1.5 }, 4.5);
 
-                // 5. MACRO DETAILS — pin + text
                 const macroTL = gsap.timeline({
                     scrollTrigger: {
                         trigger: '#chapter-macro',
@@ -870,11 +807,8 @@ function initApp() {
                     },
                 });
 
-                // ============================================================
-                // MASTER FRAME CONTROLLER — created LAST so all pinSpacing
                 // spacers are already in the DOM. Force a refresh first so
                 // GSAP recalculates #section-specs at its true position.
-                // ============================================================
                 ScrollTrigger.refresh();
                 ScrollTrigger.create({
                     trigger: 'body',
